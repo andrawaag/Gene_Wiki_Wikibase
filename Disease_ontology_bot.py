@@ -93,7 +93,7 @@ for index, row in df_doNative.iterrows():
 
     # MESH
     if "MESH:" in row["exactMatch"]:
-        data.append(wdi_core.WDExternalID(row["eactMatch"], prop_nr="P486", references=[copy.deepcopy(do_reference)]))
+        data.append(wdi_core.WDExternalID(row["exactMatch"], prop_nr="P486", references=[copy.deepcopy(do_reference)]))
 
     if row["doid"] in existing_do.keys():
         qid = existing_do[row["doid"]].replace("http://diseases.semscape.org/entity/", "")
