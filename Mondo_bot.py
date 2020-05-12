@@ -150,7 +150,7 @@ for index, row in df_mondoNative.iterrows():
         for new_alias in row["aliases"].split("|"):
             aliases.append(new_alias)
         wb_mondo_item.set_aliases(aliases, lang="en")
-    pprint.pprint(wb_mondo_item.get_wd_json_representation())
+    #pprint.pprint(wb_mondo_item.get_wd_json_representation())
     print(wb_mondo_item.wd_item_id)
-    wb_mondo_item.write(login)
-    #try_write(wb_mondo_item, record_id=row["mondoid"], record_prop="P4", edit_summary="Updated a MondoID", login=login,)
+    #wb_mondo_item.write(login)
+    try_write(wb_mondo_item, record_id=row["mondoid"], record_prop="P4", edit_summary="Updated a MondoID", login=login,)
