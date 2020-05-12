@@ -132,10 +132,12 @@ for index, row in df_mondoNative.iterrows():
     if not qid:
         wb_mondo_item = wdi_core.WDItemEngine(data=data, mediawiki_api_url=wikibase,
                                               sparql_endpoint_url="https://diseases.semscape.org/query/sparql",
+                                              global_ref_mode="STRICT_KEEP_APPEND",
                                               keep_good_ref_statements=True)
     else:
         wb_mondo_item = wdi_core.WDItemEngine(wd_item_id=qid, data=data, mediawiki_api_url=wikibase,
                                               sparql_endpoint_url="https://diseases.semscape.org/query/sparql",
+                                              global_ref_mode="STRICT_KEEP_APPEND",
                                               keep_good_ref_statements=True)
 
     if wb_mondo_item.get_label() == "":
