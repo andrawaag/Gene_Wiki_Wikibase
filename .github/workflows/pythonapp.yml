@@ -29,5 +29,5 @@ jobs:
         WDUSER: ${{ secrets.WDUSER }}
         WDPASS: ${{ secrets.WDPASS }}
       run: |
-        python Mondo_bot.py
+        echo "python Disease_ontology_bot.py"
       
