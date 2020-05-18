@@ -8,11 +8,11 @@ from datetime import datetime
 import copy
 
 def createMONDOReference(id):
-    statedin = wdi_core.WDItemID("Q12707", prop_nr="P6", is_reference=True)
+    statedin = wdi_core.WDItemID("Q2", prop_nr="P6", is_reference=True)
     retrieved = datetime.now()
     timeStringNow = retrieved.strftime("+%Y-%m-%dT00:00:00Z")
     refRetrieved = wdi_core.WDTime(timeStringNow, prop_nr="P7", is_reference=True)
-    mondoid = wdi_core.WDExternalID(id, prop_nr="P4", is_reference=True)
+    mondoid = wdi_core.WDExternalID(id, prop_nr="P5", is_reference=True)
     return [statedin, refRetrieved, mondoid]
 
 # This code is to Login to Wikibase. The pattern of api is the URL of the wikibase + /w/api.php
@@ -75,13 +75,13 @@ for index, row in df_mondoNative.iterrows():
     data = []
     mondo_reference = createMONDOReference(row["mondoid"])
     # Mondo ID
-    data.append(wdi_core.WDExternalID(row["mondoid"], prop_nr="P9", references=[copy.deepcopy(mondo_reference)]))
-    data.append(wdi_core.WDUrl(row["mondo_uri"], prop_nr="P5", references=[copy.deepcopy(mondo_reference)]))
+    data.append(wdi_core.WDExternalID(row["mondoid"], prop_nr="P5", references=[copy.deepcopy(mondo_reference)]))
+    data.append(wdi_core.WDUrl(row["mondo_uri"], prop_nr="P3", references=[copy.deepcopy(mondo_reference)]))
 
     # exact matches
     for skosExactMatch in list(set(row["exactMatches"].split("|"))):
         if skosExactMatch != "":
-            data.append(wdi_core.WDUrl(skosExactMatch, prop_nr="P5", references=[copy.deepcopy(mondo_reference)]))
+            data.append(wdi_core.WDUrl(skosExactMatch, prop_nr="P3", references=[copy.deepcopy(mondo_reference)]))
             # Disease Ontology ID (P4)
             # http://purl.obolibrary.org/obo/DOID_xxxxx
             if "http://purl.obolibrary.org/obo/DOID" in skosExactMatch:
@@ -94,35 +94,29 @@ for index, row in df_mondoNative.iterrows():
                 mesh = skosExactMatch.replace("http://identifiers.org/mesh/", "")
                 data.append(wdi_core.WDExternalID(mesh, prop_nr="P8", references=[copy.deepcopy(mondo_reference)]))
 
-            # UMLS CUI (P10)
+            # UMLS CUI (P9)
             # http://linkedlifedata.com/resource/umls/id/
             if "http://linkedlifedata.com/resource/umls/id/" in skosExactMatch:
                 umls = skosExactMatch.replace("http://linkedlifedata.com/resource/umls/id/", "")
-                data.append(wdi_core.WDExternalID(umls, prop_nr="P10", references=[copy.deepcopy(mondo_reference)]))
+                data.append(wdi_core.WDExternalID(umls, prop_nr="P9", references=[copy.deepcopy(mondo_reference)]))
 
-            # Orphanet ID (P11)
+            # Orphanet ID (P10)
             # http://www.orpha.net/ORDO/Orphanet_
             if "http://www.orpha.net/ORDO/Orphanet_" in skosExactMatch:
                 ordo = skosExactMatch.replace("http://www.orpha.net/ORDO/", "")
-                data.append(wdi_core.WDExternalID(ordo, prop_nr="P11", references=[copy.deepcopy(mondo_reference)]))
+                data.append(wdi_core.WDExternalID(ordo, prop_nr="P10", references=[copy.deepcopy(mondo_reference)]))
 
-            # SNOMED CT identifier (P12)
-            # http://identifiers.org/snomedct/191347008
-            if "http://identifiers.org/snomedct/" in skosExactMatch:
-                snomed = skosExactMatch.replace("http://identifiers.org/snomedct/", "")
-                data.append(wdi_core.WDExternalID(snomed, prop_nr="P12", references=[copy.deepcopy(mondo_reference)]))
-
-            # NCI Thesaurus ID (P13)
+            # NCI Thesaurus ID (P11)
             # http://purl.obolibrary.org/obo/NCIT_
             if "http://purl.obolibrary.org/obo/NCIT_" in skosExactMatch:
                 ncit = skosExactMatch.replace("http://purl.obolibrary.org/obo/NCIT_", "NCIT:")
-                data.append(wdi_core.WDString(ncit, prop_nr="P13", references=[copy.deepcopy(mondo_reference)]))
+                data.append(wdi_core.WDString(ncit, prop_nr="P11", references=[copy.deepcopy(mondo_reference)]))
 
-            # OMIM (P14)
+            # OMIM (P12)
             # http://identifiers.org/omim/
             if "http://identifiers.org/omim/" in skosExactMatch:
                 omim = skosExactMatch.replace("http://identifiers.org/omim/", "")
-                data.append(wdi_core.WDExternalID(omim, prop_nr="P14", references=[copy.deepcopy(mondo_reference)]))
+                data.append(wdi_core.WDExternalID(omim, prop_nr="P12", references=[copy.deepcopy(mondo_reference)]))
 
     qid = None
     for exactMatch in row["exactMatches"].split("|"):

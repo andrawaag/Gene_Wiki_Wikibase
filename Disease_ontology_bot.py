@@ -8,7 +8,7 @@ import copy
 
 
 def createDOReference(doid):
-    statedin = wdi_core.WDItemID("Q12581", prop_nr="P6", is_reference=True)
+    statedin = wdi_core.WDItemID("Q1", prop_nr="P6", is_reference=True)
     retrieved = datetime.now()
     timeStringNow = retrieved.strftime("+%Y-%m-%dT00:00:00Z")
     refRetrieved = wdi_core.WDTime(timeStringNow, prop_nr="P7", is_reference=True)
@@ -17,7 +17,7 @@ def createDOReference(doid):
 
 
 # This code is to Login to Wikibase. The pattern of api is the URL of the wikibase + /w/api.php
-# In this example that is https://diseases.semscape.org/w/api.php
+# In this example that is https://do-mondo.semscape.org/w/api.php
 
 print("Logging in...")
 if "WDUSER" in os.environ and "WDPASS" in os.environ:
@@ -26,7 +26,7 @@ if "WDUSER" in os.environ and "WDPASS" in os.environ:
 else:
     raise ValueError("WDUSER and WDPASS must be specified in local.py or as environment variables")
 
-wikibase = "https://diseases.semscape.org/w/api.php"
+wikibase = "https://do-mondo.semscape.org/w/api.php"
 login = wdi_login.WDLogin(WDUSER, WDPASS,mediawiki_api_url=wikibase)
 
 ## The following section is to download the orginal Disease ontology
@@ -70,11 +70,11 @@ for row in qres:
       }, ignore_index=True)
 
 query = """
-  PREFIX wbt: <http://diseases.semscape.org/prop/direct/>
+  PREFIX wbt: <http://do-mondo.semscape.org/prop/direct/>
   SELECT * WHERE {?item wbt:P4 ?doid}
 """
 existing_do = dict()
-results = wdi_core.WDItemEngine.execute_sparql_query(query=query, endpoint="https://diseases.semscape.org/query/sparql")
+results = wdi_core.WDItemEngine.execute_sparql_query(query=query, endpoint="https://do-mondo.semscape.org/query/sparql")
 
 for result in results["results"]["bindings"]:
     existing_do[result["doid"]["value"]] = result["item"]["value"]
@@ -86,21 +86,21 @@ for index, row in df_doNative.iterrows():
     data.append(wdi_core.WDExternalID(row["doid"], prop_nr="P4", references=[copy.deepcopy(do_reference)]))
 
     # disease ontology URI
-    data.append(wdi_core.WDUrl(row["do_uri"], prop_nr="P5", references=[copy.deepcopy(do_reference)]))
+    data.append(wdi_core.WDUrl(row["do_uri"], prop_nr="P3", references=[copy.deepcopy(do_reference)]))
 
     # identifiers.org URI
-    data.append(wdi_core.WDUrl("http://identifiers.org/doid/"+row["doid"], prop_nr="P5", references=[copy.deepcopy(do_reference)]))
+    data.append(wdi_core.WDUrl("http://identifiers.org/doid/"+row["doid"], prop_nr="P3", references=[copy.deepcopy(do_reference)]))
 
     # MESH
     if "MESH:" in row["exactMatch"]:
         data.append(wdi_core.WDExternalID(row["exactMatch"], prop_nr="P8", references=[copy.deepcopy(do_reference)]))
 
     if row["doid"] in existing_do.keys():
-        qid = existing_do[row["doid"]].replace("http://diseases.semscape.org/entity/", "")
-        wb_do_item = wdi_core.WDItemEngine(wd_item_id=qid, data=data, mediawiki_api_url=wikibase, sparql_endpoint_url="https://diseases.semscape.org/query/sparql")
+        qid = existing_do[row["doid"]].replace("http://do-mondo.semscape.org/entity/", "")
+        wb_do_item = wdi_core.WDItemEngine(wd_item_id=qid, data=data, mediawiki_api_url=wikibase, sparql_endpoint_url="https://do-mondo.semscape.org/query/sparql")
     else:
         wb_do_item = wdi_core.WDItemEngine(data=data, mediawiki_api_url=wikibase,
-                                           sparql_endpoint_url="https://diseases.semscape.org/query/sparql")
+                                           sparql_endpoint_url="https://do-mondo.semscape.org/query/sparql")
 
     wb_do_item.set_label(row["label"], lang="en")
     wb_do_item.set_description("human disease", lang="en")
