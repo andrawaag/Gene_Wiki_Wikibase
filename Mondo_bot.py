@@ -16,7 +16,7 @@ def createMONDOReference(id):
     return [statedin, refRetrieved, mondoid]
 
 # This code is to Login to Wikibase. The pattern of api is the URL of the wikibase + /w/api.php
-# In this example that is https://diseases.semscape.org/w/api.php
+# In this example that is https://do-mondo.semscape.org/w/api.php
 
 ## The following section is to download the orginal Disease ontology
 print("\nDownloading Mondo ...")
@@ -51,7 +51,7 @@ for row in qres:
      "aliases": str(row[4])
       }, ignore_index=True)
 
-wikibase = "https://diseases.semscape.org/w/api.php"
+wikibase = "https://do-mondo.semscape.org/w/api.php"
 sparql = ""
 print("Logging in...")
 if "WDUSER" in os.environ and "WDPASS" in os.environ:
@@ -62,11 +62,11 @@ else:
 login = wdi_login.WDLogin(WDUSER, WDPASS, mediawiki_api_url=wikibase)
 
 query = """
-  PREFIX wbt: <http://diseases.semscape.org/prop/direct/>
-  SELECT * WHERE {?item wbt:P5 ?exactMatch}
+  PREFIX wbt: <http://do-mondo.semscape.org/prop/direct/>
+  SELECT * WHERE {?item wbt:P3 ?exactMatch}
 """
 existing_disease = dict()
-results = wdi_core.WDItemEngine.execute_sparql_query(query=query, endpoint="https://diseases.semscape.org/query/sparql" )
+results = wdi_core.WDItemEngine.execute_sparql_query(query=query, endpoint="https://do-mondo.semscape.org/query/sparql" )
 
 for result in results["results"]["bindings"]:
     existing_disease[result["exactMatch"]["value"]] = result["item"]["value"]
@@ -103,7 +103,7 @@ for index, row in df_mondoNative.iterrows():
             # Orphanet ID (P10)
             # http://www.orpha.net/ORDO/Orphanet_
             if "http://www.orpha.net/ORDO/Orphanet_" in skosExactMatch:
-                ordo = skosExactMatch.replace("http://www.orpha.net/ORDO/", "")
+                ordo = skosExactMatch.replace("http://www.orpha.net/ORDO/Orphanet_", "")
                 data.append(wdi_core.WDExternalID(ordo, prop_nr="P10", references=[copy.deepcopy(mondo_reference)]))
 
             # NCI Thesaurus ID (P11)
@@ -121,16 +121,15 @@ for index, row in df_mondoNative.iterrows():
     qid = None
     for exactMatch in row["exactMatches"].split("|"):
         if exactMatch in existing_disease.keys():
-            qid = existing_disease[exactMatch].replace("http://diseases.semscape.org/entity/", "")
-        continue
-    if not qid:
-        wb_mondo_item = wdi_core.WDItemEngine(data=data, mediawiki_api_url=wikibase,
-                                              sparql_endpoint_url="https://diseases.semscape.org/query/sparql",
-                                              global_ref_mode="STRICT_KEEP_APPEND",
-                                              keep_good_ref_statements=True)
+            qid = existing_disease[exactMatch].replace("http://do-mondo.semscape.org/entity/", "")
+            wb_mondo_item = wdi_core.WDItemEngine(wd_item_id=qid, data=data, mediawiki_api_url=wikibase,
+                                                  sparql_endpoint_url="https://do-mondo.semscape.org/query/sparql",
+                                                  global_ref_mode="STRICT_KEEP_APPEND",
+                                                  keep_good_ref_statements=True)
+            break
     else:
-        wb_mondo_item = wdi_core.WDItemEngine(wd_item_id=qid, data=data, mediawiki_api_url=wikibase,
-                                              sparql_endpoint_url="https://diseases.semscape.org/query/sparql",
+        wb_mondo_item = wdi_core.WDItemEngine(data=data, mediawiki_api_url=wikibase,
+                                              sparql_endpoint_url="https://do-mondo.semscape.org/query/sparql",
                                               global_ref_mode="STRICT_KEEP_APPEND",
                                               keep_good_ref_statements=True)
 
