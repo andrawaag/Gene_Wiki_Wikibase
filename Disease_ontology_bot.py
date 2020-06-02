@@ -31,7 +31,7 @@ login = wdi_login.WDLogin(WDUSER, WDPASS,mediawiki_api_url=wikibase)
 
 ## The following section is to download the orginal Disease ontology
 print("\nDownloading the Disease Ontology...")
-url = "https://raw.githubusercontent.com/DiseaseOntology/HumanDiseaseOntology/master/src/ontology/releases/2020-04-20/doid.owl"
+url = "https://raw.githubusercontent.com/DiseaseOntology/HumanDiseaseOntology/master/src/ontology/releases/2020-05-20/doid.owl"
 
 doGraph = Graph()
 doGraph.parse(url, format="xml")
