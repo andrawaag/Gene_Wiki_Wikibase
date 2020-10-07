@@ -95,6 +95,8 @@ for index, row in df_doNative.iterrows():
     try_write(wb_olddo_item, record_id=row["doid"], record_prop="P699", edit_summary="cleaned references a Disease Ontology",
               login=login)
 
+    sys.exit()
+
 
     # Add recent disease ontology statements
     data = []
